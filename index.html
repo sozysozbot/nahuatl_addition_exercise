@@ -4,16 +4,14 @@
     <meta charset="UTF-8" />
     <title>nahuatl_addition_exercise</title>
     <style>
-        button.ans {
+        button {
             font-size: 19px;
             flex-shrink: 0;
             line-height: 1.15;
             background: none;
-            border-width: 2px 2px 4px;
             display: inline-block;
             text-align: center;
             white-space: nowrap;
-            cursor: pointer;
             touch-action: manipulation;
             user-select: none;
             border-radius: 16px;
@@ -21,11 +19,42 @@
             font-family: sans-serif;
             overflow: visible;
             padding: 12px 16px;
+        }
+
+        button.submit {
+            border-width: 0 0 4px;
+            border-color: #58a700;
+            background-color: #58cc02;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        button.submit:hover {
+            border-width: 0 0 4px;
+            background-color: rgb(96, 223, 2);
+        }
+
+        button.submit:active {
+            border-width: 0;
+            background-color: rgb(96, 223, 2);
+            transform: translateY(4px);
+        }
+
+        button.word {
+            border-width: 2px 2px 4px;
             border-color: #e5e5e5;
+        }
+
+        button.word:active {
+            border-width: 2px 2px 2px;
+            border-color: #e5e5e5;
+            transform: translateY(2px);
         }
 
         button.displayed {
             color: #4b4b4b;
+            cursor: pointer;
         }
 
         button.not_displayed {
@@ -34,7 +63,7 @@
         }
 
         .annotated {
-            border-bottom: 3px dashed rgb(175, 175, 175);
+            border-bottom: 3px dotted rgb(175, 175, 175);
         }
 
         .problem {
@@ -55,14 +84,16 @@
             padding: 6px;
         }
 
-        .candidates { padding: 50px 0 0 0; }
+        .candidates {
+            padding: 50px 0 0 0;
+        }
     </style>
 </head>
 
 <body>
-    <div style="margin: 0 auto; padding: 30px; width: 40%;">
+    <div style="margin: 0 auto; padding: 30px; max-width: 600px; min-width: 600px;">
         <div class="problem" style="font-size: 19px; font-weight: sans-serif"><svg
-                style="width:64px;height:64px; vertical-align: middle" viewBox="0 0 24 24">
+                style="width:64px;height:64px; vertical-align: middle" viewbox="0 0 24 24">
                 <g>
                     <title>Recording by *** / 这是***的录音。</title>
                     <circle cx="12" cy="8" r="4" fill="#4b4b4b"></circle>
@@ -78,19 +109,22 @@
 
 
         <div class="response">
-            <button class="ans displayed">caxtolli</button>
-            <button class="ans displayed">huan</button>
-            <button class="ans displayed">ce</button>
+            <button class="word displayed">caxtolli</button>
+            <button class="word displayed">huan</button>
+            <button class="word displayed">ce</button>
         </div>
 
         <div class="candidates">
-            <button class="ans not_displayed">huan</button>
-            <button class="ans not_displayed">caxtolli</button>
-            <button class="ans displayed">tlahco</button>
-            <button class="ans not_displayed">ce</button>
-            <button class="ans displayed">chiucnahui</button>
-            <button class="ans displayed">ome</button>
+            <button class="word not_displayed">huan</button>
+            <button class="word not_displayed">caxtolli</button>
+            <button class="word displayed">tlahco</button>
+            <button class="word not_displayed">ce</button>
+            <button class="word displayed">chiucnahui</button>
+            <button class="word displayed">ome</button>
         </div>
 
+        <div style="text-align: center; padding: 50px 0 0 0">
+            <button class="submit">Submit</button>
+        </div>
     </div>
 </body>
