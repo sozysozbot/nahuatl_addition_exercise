@@ -16,12 +16,15 @@ button {
 }
 
 button.submit {
+    font-size: 16px;
     border-width: 0 0 4px;
     border-color: #58a700;
-    background-color: #58cc02;
+    background-color: rgb(88, 204, 2);
     color: white;
     cursor: pointer;
     font-weight: bold;
+    max-width: 150px;
+    min-width: 150px;
 }
 
 button.submit:hover {
@@ -32,6 +35,29 @@ button.submit:hover {
 button.submit:active {
     border-width: 0;
     background-color: rgb(96, 223, 2);
+    transform: translateY(4px);
+}
+
+button.red_submit {
+    font-size: 16px;
+    border-width: 0 0 4px;
+    border-color: rgb(234, 43, 43);
+    background-color: rgb(255, 75, 75);
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+    max-width: 150px;
+    min-width: 150px;
+}
+
+button.red_submit:hover {
+    border-width: 0 0 4px;
+    background-color: rgb(255, 96, 96);
+}
+
+button.red_submit:active {
+    border-width: 0;
+    background-color: rgb(255, 96, 96);
     transform: translateY(4px);
 }
 
