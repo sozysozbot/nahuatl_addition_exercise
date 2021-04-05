@@ -1,12 +1,15 @@
 <!DOCTYPE html>
+<html>
 
 <head>
     <meta charset="UTF-8" />
     <title>nahuatl_addition_exercise</title>
     <link rel="stylesheet" href="style.css">
+    <script src="main.js"></script>
 </head>
 
 <body>
+    <div id="myapp"></div>
     <div style="margin: 0 auto; padding: 30px; max-width: 600px; min-width: 600px;">
         <div class="problem" style="font-size: 19px; font-weight: sans-serif"><svg
                 style="width:64px;height:64px; vertical-align: middle" viewbox="0 0 24 24">
@@ -54,4 +57,11 @@
             <b style="color: rgb(236, 11, 27); position: absolute; left: 160px; top: 15px; font-size: 23px;">Axcanah.</b> 
         </div>
     </div>
+    <script>
+        var app = Elm.Main.init({
+            node: document.getElementById('myapp')
+        });
+    </script>
 </body>
+
+</html>
