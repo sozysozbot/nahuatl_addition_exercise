@@ -23,8 +23,12 @@ type alias Word =
     String
 
 
+type alias CandidatePossiblyUsedUp =
+    { w : Word, used_up : Bool }
+
+
 type alias UserAnswer =
-    { submission : List Word, candidates : List { w : Word, used_up : Bool } }
+    { response : List Word, candidates : List CandidatePossiblyUsedUp }
 
 
 type State
@@ -33,26 +37,22 @@ type State
     | YouAreWrong
 
 
-type alias Prompt =
-    { prompt : List Word }
-
-
 type alias Model =
-    { state : State, ans : UserAnswer, prompt : Prompt }
+    { state : State, ans : UserAnswer, prompt : List Word }
 
 
 init : Model
 init =
-    { prompt = { prompt = [ "chicueyi", "huan", "chicueyi" ] }
+    { prompt = [ "chicueyi", "huan", "chicueyi" ]
     , state =
         ComposingSubmission
     , ans =
-        { submission = [ "caxtolli", "huan", "ce" ]
+        { response = []
         , candidates =
-            [ { w = "huan", used_up = True }
-            , { w = "caxtolli", used_up = True }
+            [ { w = "huan", used_up = False }
+            , { w = "caxtolli", used_up = False }
             , { w = "tlahco", used_up = False }
-            , { w = "ce", used_up = True }
+            , { w = "ce", used_up = False }
             , { w = "chiucnahui", used_up = False }
             , { w = "ome", used_up = False }
             ]
@@ -66,6 +66,7 @@ init =
 
 type Msg
     = Proceed -- NIQUIHTOA if ComposingSubmission; CEYOC if otherwise
+    | UpdateAnsAs UserAnswer
 
 
 update : Msg -> Model -> Model
@@ -78,15 +79,22 @@ update msg model =
             init
 
         ( Proceed, ComposingSubmission ) ->
-            if model.ans.submission == [ "caxtolli", "huan", "ce" ] then
+            if model.ans.response == [ "caxtolli", "huan", "ce" ] then
                 { model | state = YouAreRight }
 
             else
                 { model | state = YouAreWrong }
 
+        ( UpdateAnsAs new_ans, ComposingSubmission ) ->
+            { model | ans = new_ans }
 
+        {- should not happen! -}
+        ( UpdateAnsAs _, YouAreRight ) ->
+            model
 
--- VIEW
+        {- should not happen! -}
+        ( UpdateAnsAs _, YouAreWrong ) ->
+            model
 
 
 icon : Html msg
@@ -98,6 +106,23 @@ icon =
             , polygon [ fill "white", points "0,0 4,0 4,20 20,20 20,0 24,0 24,24 0,24" ] []
             ]
         ]
+
+
+resurrect_word : String -> List CandidatePossiblyUsedUp -> List CandidatePossiblyUsedUp
+resurrect_word word list =
+    case list of
+        [] ->
+            []
+
+        x :: xs ->
+            if not x.used_up then
+                x :: resurrect_word word xs
+
+            else if x.w == word then
+                { w = x.w, used_up = False } :: xs
+
+            else
+                x :: resurrect_word word xs
 
 
 view : Model -> Html Msg
@@ -112,60 +137,103 @@ view model =
             ([ icon
              , span [ title "Recording not yet available!" ] [ text "🔊" ]
              ]
-                ++ (model.prompt.prompt
+                ++ (model.prompt
                         |> List.map (\w -> span [ class "annotated" ] [ text w ])
                         |> intersperse (text " ")
                    )
             )
         , div [ class "response" ]
-            (model.ans.submission
-                |> List.map (btn True)
+            (model.ans.response
+                |> all_possible_removal_of_one_elem
+                |> List.map
+                    (\( word_to_be_removed_from_response, remaining ) ->
+                        UpdateAnsAs
+                            { response = remaining
+                            , candidates = resurrect_word word_to_be_removed_from_response model.ans.candidates
+                            }
+                            |> btn True word_to_be_removed_from_response
+                    )
                 |> intersperse (text " ")
             )
         , div [ class "candidates", style "padding-bottom" "40px" ]
             (model.ans.candidates
-                |> List.map candidate_button
+                |> all_possible_turnoff_of_one_elem
+                |> List.map
+                    (\( q, new_candidates ) ->
+                        UpdateAnsAs { candidates = new_candidates, response = model.ans.response ++ [ q.w ] }
+                            |> btn (not q.used_up) q.w
+                    )
                 |> intersperse (text " ")
             )
-        , submission_or_feedback model.state
+        , html_for_submission_or_feedback model.state
         ]
 
 
-btn : Bool -> String -> Html msg
-btn disp txt =
-    button
-        [ class "word"
-        , class
-            (if disp then
-                "displayed"
+all_possible_turnoff_of_one_elem : List CandidatePossiblyUsedUp -> List ( CandidatePossiblyUsedUp, List CandidatePossiblyUsedUp )
+all_possible_turnoff_of_one_elem list =
+    case list of
+        [] ->
+            []
 
-             else
-                "not_displayed"
-            )
-        ]
-        [ text txt ]
+        x :: xs ->
+            ( x, { x | used_up = True } :: xs )
+                :: helper x (all_possible_turnoff_of_one_elem xs)
 
 
-candidate_button : { a | used_up : Bool, w : String } -> Html msg
-candidate_button q =
-    btn (not q.used_up) q.w
+helper : a -> List ( b, List a ) -> List ( b, List a )
+helper x =
+    List.map (\( b, a ) -> ( b, x :: a ))
 
 
-submission_or_feedback : State -> Html Msg
-submission_or_feedback ans =
+
+{-
+   all_possible_removal_of_one_elem [0,1,2,3,4] == [(0,[1,2,3,4]),(1,[0,2,3,4]),(2,[0,1,3,4]),(3,[0,1,2,4]),(4,[0,1,2,3])]
+-}
+
+
+all_possible_removal_of_one_elem : List b -> List ( b, List b )
+all_possible_removal_of_one_elem list =
+    case list of
+        [] ->
+            []
+
+        z :: zs ->
+            ( z, zs ) :: helper z (all_possible_removal_of_one_elem zs)
+
+
+btn : Bool -> String -> msg -> Html msg
+btn disp txt msg =
+    if disp then
+        button
+            [ class "word"
+            , class "displayed"
+            , onClick msg
+            ]
+            [ text txt ]
+
+    else
+        button
+            [ class "word"
+            , class "not_displayed"
+            ]
+            [ text txt ]
+
+
+html_for_submission_or_feedback : State -> Html Msg
+html_for_submission_or_feedback ans =
     case ans of
         ComposingSubmission ->
-            div [ onClick Proceed, class "submission_or_feedback" ] [ button [ class "submit", class "on_the_right" ] [ text "NIQUIHTOA" ] ]
+            div [ class "submission_or_feedback" ] [ button [ onClick Proceed, class "submit", class "on_the_right" ] [ text "NIQUIHTOA" ] ]
 
         YouAreRight ->
-            div [ onClick Proceed, class "submission_or_feedback", class "correct_feedback" ]
-                [ button [ class "submit", class "on_the_right" ] [ text "CEYOC" ]
+            div [ class "submission_or_feedback", class "correct_feedback" ]
+                [ button [ onClick Proceed, class "submit", class "on_the_right" ] [ text "CEYOC" ]
                 , b [ class "feedback_text", class "correct_feedback_text" ] [ text "¡Quena!" ]
                 ]
 
         YouAreWrong ->
-            div [ onClick Proceed, class "submission_or_feedback", class "incorrect_feedback" ]
-                [ button [ class "red_submit", class "on_the_right" ] [ text "CEYOC" ]
+            div [ class "submission_or_feedback", class "incorrect_feedback" ]
+                [ button [ onClick Proceed, class "red_submit", class "on_the_right" ] [ text "CEYOC" ]
                 , b [ class "feedback_text", class "incorrect_feedback_text" ] [ text "Axcanah." ]
                 ]
 

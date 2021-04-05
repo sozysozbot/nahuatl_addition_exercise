@@ -132,6 +132,8 @@ button.not_displayed {
     border-top: 2px solid #e5e5e5;
     border-bottom: 2px solid #e5e5e5;
     padding: 6px;
+    min-height: 51.6px;
+    max-height: 51.6px;
 }
 
 .candidates {

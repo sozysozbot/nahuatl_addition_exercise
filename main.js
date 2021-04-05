@@ -4437,25 +4437,21 @@ var $elm$core$Basics$GT = {$: 'GT'};
 var $elm$core$Basics$LT = {$: 'LT'};
 var $author$project$Main$ComposingSubmission = {$: 'ComposingSubmission'};
 var $elm$core$Basics$False = {$: 'False'};
-var $elm$core$Basics$True = {$: 'True'};
 var $author$project$Main$init = {
 	ans: {
 		candidates: _List_fromArray(
 			[
-				{used_up: true, w: 'huan'},
-				{used_up: true, w: 'caxtolli'},
+				{used_up: false, w: 'huan'},
+				{used_up: false, w: 'caxtolli'},
 				{used_up: false, w: 'tlahco'},
-				{used_up: true, w: 'ce'},
+				{used_up: false, w: 'ce'},
 				{used_up: false, w: 'chiucnahui'},
 				{used_up: false, w: 'ome'}
 			]),
-		submission: _List_fromArray(
-			['caxtolli', 'huan', 'ce'])
+		response: _List_Nil
 	},
-	prompt: {
-		prompt: _List_fromArray(
-			['chicueyi', 'huan', 'chicueyi'])
-	},
+	prompt: _List_fromArray(
+		['chicueyi', 'huan', 'chicueyi']),
 	state: $author$project$Main$ComposingSubmission
 };
 var $elm$core$Result$Err = function (a) {
@@ -4844,6 +4840,7 @@ var $elm$core$Array$initialize = F2(
 			return A5($elm$core$Array$initializeHelp, fn, initialFromIndex, len, _List_Nil, tail);
 		}
 	});
+var $elm$core$Basics$True = {$: 'True'};
 var $elm$core$Result$isOk = function (result) {
 	if (result.$ === 'Ok') {
 		return true;
@@ -5191,28 +5188,95 @@ var $author$project$Main$YouAreWrong = {$: 'YouAreWrong'};
 var $author$project$Main$update = F2(
 	function (msg, model) {
 		var _v0 = _Utils_Tuple2(msg, model.state);
-		switch (_v0.b.$) {
-			case 'YouAreRight':
-				var _v1 = _v0.a;
-				var _v2 = _v0.b;
-				return $author$project$Main$init;
-			case 'YouAreWrong':
-				var _v3 = _v0.a;
-				var _v4 = _v0.b;
-				return $author$project$Main$init;
-			default:
-				var _v5 = _v0.a;
-				var _v6 = _v0.b;
-				return _Utils_eq(
-					model.ans.submission,
-					_List_fromArray(
-						['caxtolli', 'huan', 'ce'])) ? _Utils_update(
-					model,
-					{state: $author$project$Main$YouAreRight}) : _Utils_update(
-					model,
-					{state: $author$project$Main$YouAreWrong});
+		if (_v0.a.$ === 'Proceed') {
+			switch (_v0.b.$) {
+				case 'YouAreRight':
+					var _v1 = _v0.a;
+					var _v2 = _v0.b;
+					return $author$project$Main$init;
+				case 'YouAreWrong':
+					var _v3 = _v0.a;
+					var _v4 = _v0.b;
+					return $author$project$Main$init;
+				default:
+					var _v5 = _v0.a;
+					var _v6 = _v0.b;
+					return _Utils_eq(
+						model.ans.response,
+						_List_fromArray(
+							['caxtolli', 'huan', 'ce'])) ? _Utils_update(
+						model,
+						{state: $author$project$Main$YouAreRight}) : _Utils_update(
+						model,
+						{state: $author$project$Main$YouAreWrong});
+			}
+		} else {
+			switch (_v0.b.$) {
+				case 'ComposingSubmission':
+					var new_ans = _v0.a.a;
+					var _v7 = _v0.b;
+					return _Utils_update(
+						model,
+						{ans: new_ans});
+				case 'YouAreRight':
+					var _v8 = _v0.b;
+					return model;
+				default:
+					var _v9 = _v0.b;
+					return model;
+			}
 		}
 	});
+var $author$project$Main$UpdateAnsAs = function (a) {
+	return {$: 'UpdateAnsAs', a: a};
+};
+var $author$project$Main$helper = function (x) {
+	return $elm$core$List$map(
+		function (_v0) {
+			var b = _v0.a;
+			var a = _v0.b;
+			return _Utils_Tuple2(
+				b,
+				A2($elm$core$List$cons, x, a));
+		});
+};
+var $author$project$Main$all_possible_removal_of_one_elem = function (list) {
+	if (!list.b) {
+		return _List_Nil;
+	} else {
+		var z = list.a;
+		var zs = list.b;
+		return A2(
+			$elm$core$List$cons,
+			_Utils_Tuple2(z, zs),
+			A2(
+				$author$project$Main$helper,
+				z,
+				$author$project$Main$all_possible_removal_of_one_elem(zs)));
+	}
+};
+var $author$project$Main$all_possible_turnoff_of_one_elem = function (list) {
+	if (!list.b) {
+		return _List_Nil;
+	} else {
+		var x = list.a;
+		var xs = list.b;
+		return A2(
+			$elm$core$List$cons,
+			_Utils_Tuple2(
+				x,
+				A2(
+					$elm$core$List$cons,
+					_Utils_update(
+						x,
+						{used_up: true}),
+					xs)),
+			A2(
+				$author$project$Main$helper,
+				x,
+				$author$project$Main$all_possible_turnoff_of_one_elem(xs)));
+	}
+};
 var $elm$html$Html$button = _VirtualDom_node('button');
 var $elm$json$Json$Encode$string = _Json_wrap;
 var $elm$html$Html$Attributes$stringProperty = F2(
@@ -5223,28 +5287,147 @@ var $elm$html$Html$Attributes$stringProperty = F2(
 			$elm$json$Json$Encode$string(string));
 	});
 var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty('className');
+var $elm$virtual_dom$VirtualDom$Normal = function (a) {
+	return {$: 'Normal', a: a};
+};
+var $elm$virtual_dom$VirtualDom$on = _VirtualDom_on;
+var $elm$html$Html$Events$on = F2(
+	function (event, decoder) {
+		return A2(
+			$elm$virtual_dom$VirtualDom$on,
+			event,
+			$elm$virtual_dom$VirtualDom$Normal(decoder));
+	});
+var $elm$html$Html$Events$onClick = function (msg) {
+	return A2(
+		$elm$html$Html$Events$on,
+		'click',
+		$elm$json$Json$Decode$succeed(msg));
+};
 var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
-var $author$project$Main$btn = F2(
-	function (disp, txt) {
-		return A2(
+var $author$project$Main$btn = F3(
+	function (disp, txt, msg) {
+		return disp ? A2(
 			$elm$html$Html$button,
 			_List_fromArray(
 				[
 					$elm$html$Html$Attributes$class('word'),
-					$elm$html$Html$Attributes$class(
-					disp ? 'displayed' : 'not_displayed')
+					$elm$html$Html$Attributes$class('displayed'),
+					$elm$html$Html$Events$onClick(msg)
+				]),
+			_List_fromArray(
+				[
+					$elm$html$Html$text(txt)
+				])) : A2(
+			$elm$html$Html$button,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('word'),
+					$elm$html$Html$Attributes$class('not_displayed')
 				]),
 			_List_fromArray(
 				[
 					$elm$html$Html$text(txt)
 				]));
 	});
-var $elm$core$Basics$not = _Basics_not;
-var $author$project$Main$candidate_button = function (q) {
-	return A2($author$project$Main$btn, !q.used_up, q.w);
-};
 var $elm$html$Html$div = _VirtualDom_node('div');
+var $author$project$Main$Proceed = {$: 'Proceed'};
+var $elm$html$Html$b = _VirtualDom_node('b');
+var $author$project$Main$html_for_submission_or_feedback = function (ans) {
+	switch (ans.$) {
+		case 'ComposingSubmission':
+			return A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('submission_or_feedback')
+					]),
+				_List_fromArray(
+					[
+						A2(
+						$elm$html$Html$button,
+						_List_fromArray(
+							[
+								$elm$html$Html$Events$onClick($author$project$Main$Proceed),
+								$elm$html$Html$Attributes$class('submit'),
+								$elm$html$Html$Attributes$class('on_the_right')
+							]),
+						_List_fromArray(
+							[
+								$elm$html$Html$text('NIQUIHTOA')
+							]))
+					]));
+		case 'YouAreRight':
+			return A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('submission_or_feedback'),
+						$elm$html$Html$Attributes$class('correct_feedback')
+					]),
+				_List_fromArray(
+					[
+						A2(
+						$elm$html$Html$button,
+						_List_fromArray(
+							[
+								$elm$html$Html$Events$onClick($author$project$Main$Proceed),
+								$elm$html$Html$Attributes$class('submit'),
+								$elm$html$Html$Attributes$class('on_the_right')
+							]),
+						_List_fromArray(
+							[
+								$elm$html$Html$text('CEYOC')
+							])),
+						A2(
+						$elm$html$Html$b,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('feedback_text'),
+								$elm$html$Html$Attributes$class('correct_feedback_text')
+							]),
+						_List_fromArray(
+							[
+								$elm$html$Html$text('¡Quena!')
+							]))
+					]));
+		default:
+			return A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('submission_or_feedback'),
+						$elm$html$Html$Attributes$class('incorrect_feedback')
+					]),
+				_List_fromArray(
+					[
+						A2(
+						$elm$html$Html$button,
+						_List_fromArray(
+							[
+								$elm$html$Html$Events$onClick($author$project$Main$Proceed),
+								$elm$html$Html$Attributes$class('red_submit'),
+								$elm$html$Html$Attributes$class('on_the_right')
+							]),
+						_List_fromArray(
+							[
+								$elm$html$Html$text('CEYOC')
+							])),
+						A2(
+						$elm$html$Html$b,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('feedback_text'),
+								$elm$html$Html$Attributes$class('incorrect_feedback_text')
+							]),
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Axcanah.')
+							]))
+					]));
+	}
+};
 var $elm$svg$Svg$trustedNode = _VirtualDom_nodeNS('http://www.w3.org/2000/svg');
 var $elm$svg$Svg$circle = $elm$svg$Svg$trustedNode('circle');
 var $elm$svg$Svg$Attributes$cx = _VirtualDom_attribute('cx');
@@ -5326,120 +5509,27 @@ var $elm$core$List$intersperse = F2(
 			return A2($elm$core$List$cons, hd, spersed);
 		}
 	});
-var $elm$html$Html$span = _VirtualDom_node('span');
-var $author$project$Main$Proceed = {$: 'Proceed'};
-var $elm$html$Html$b = _VirtualDom_node('b');
-var $elm$virtual_dom$VirtualDom$Normal = function (a) {
-	return {$: 'Normal', a: a};
-};
-var $elm$virtual_dom$VirtualDom$on = _VirtualDom_on;
-var $elm$html$Html$Events$on = F2(
-	function (event, decoder) {
-		return A2(
-			$elm$virtual_dom$VirtualDom$on,
-			event,
-			$elm$virtual_dom$VirtualDom$Normal(decoder));
+var $elm$core$Basics$not = _Basics_not;
+var $author$project$Main$resurrect_word = F2(
+	function (word, list) {
+		if (!list.b) {
+			return _List_Nil;
+		} else {
+			var x = list.a;
+			var xs = list.b;
+			return (!x.used_up) ? A2(
+				$elm$core$List$cons,
+				x,
+				A2($author$project$Main$resurrect_word, word, xs)) : (_Utils_eq(x.w, word) ? A2(
+				$elm$core$List$cons,
+				{used_up: false, w: x.w},
+				xs) : A2(
+				$elm$core$List$cons,
+				x,
+				A2($author$project$Main$resurrect_word, word, xs)));
+		}
 	});
-var $elm$html$Html$Events$onClick = function (msg) {
-	return A2(
-		$elm$html$Html$Events$on,
-		'click',
-		$elm$json$Json$Decode$succeed(msg));
-};
-var $author$project$Main$submission_or_feedback = function (ans) {
-	switch (ans.$) {
-		case 'ComposingSubmission':
-			return A2(
-				$elm$html$Html$div,
-				_List_fromArray(
-					[
-						$elm$html$Html$Events$onClick($author$project$Main$Proceed),
-						$elm$html$Html$Attributes$class('submission_or_feedback')
-					]),
-				_List_fromArray(
-					[
-						A2(
-						$elm$html$Html$button,
-						_List_fromArray(
-							[
-								$elm$html$Html$Attributes$class('submit'),
-								$elm$html$Html$Attributes$class('on_the_right')
-							]),
-						_List_fromArray(
-							[
-								$elm$html$Html$text('NIQUIHTOA')
-							]))
-					]));
-		case 'YouAreRight':
-			return A2(
-				$elm$html$Html$div,
-				_List_fromArray(
-					[
-						$elm$html$Html$Events$onClick($author$project$Main$Proceed),
-						$elm$html$Html$Attributes$class('submission_or_feedback'),
-						$elm$html$Html$Attributes$class('correct_feedback')
-					]),
-				_List_fromArray(
-					[
-						A2(
-						$elm$html$Html$button,
-						_List_fromArray(
-							[
-								$elm$html$Html$Attributes$class('submit'),
-								$elm$html$Html$Attributes$class('on_the_right')
-							]),
-						_List_fromArray(
-							[
-								$elm$html$Html$text('CEYOC')
-							])),
-						A2(
-						$elm$html$Html$b,
-						_List_fromArray(
-							[
-								$elm$html$Html$Attributes$class('feedback_text'),
-								$elm$html$Html$Attributes$class('correct_feedback_text')
-							]),
-						_List_fromArray(
-							[
-								$elm$html$Html$text('¡Quena!')
-							]))
-					]));
-		default:
-			return A2(
-				$elm$html$Html$div,
-				_List_fromArray(
-					[
-						$elm$html$Html$Events$onClick($author$project$Main$Proceed),
-						$elm$html$Html$Attributes$class('submission_or_feedback'),
-						$elm$html$Html$Attributes$class('incorrect_feedback')
-					]),
-				_List_fromArray(
-					[
-						A2(
-						$elm$html$Html$button,
-						_List_fromArray(
-							[
-								$elm$html$Html$Attributes$class('red_submit'),
-								$elm$html$Html$Attributes$class('on_the_right')
-							]),
-						_List_fromArray(
-							[
-								$elm$html$Html$text('CEYOC')
-							])),
-						A2(
-						$elm$html$Html$b,
-						_List_fromArray(
-							[
-								$elm$html$Html$Attributes$class('feedback_text'),
-								$elm$html$Html$Attributes$class('incorrect_feedback_text')
-							]),
-						_List_fromArray(
-							[
-								$elm$html$Html$text('Axcanah.')
-							]))
-					]));
-	}
-};
+var $elm$html$Html$span = _VirtualDom_node('span');
 var $author$project$Main$view = function (model) {
 	return A2(
 		$elm$html$Html$div,
@@ -5492,7 +5582,7 @@ var $author$project$Main$view = function (model) {
 											$elm$html$Html$text(w)
 										]));
 							},
-							model.prompt.prompt)))),
+							model.prompt)))),
 				A2(
 				$elm$html$Html$div,
 				_List_fromArray(
@@ -5504,8 +5594,20 @@ var $author$project$Main$view = function (model) {
 					$elm$html$Html$text(' '),
 					A2(
 						$elm$core$List$map,
-						$author$project$Main$btn(true),
-						model.ans.submission))),
+						function (_v0) {
+							var word_to_be_removed_from_response = _v0.a;
+							var remaining = _v0.b;
+							return A3(
+								$author$project$Main$btn,
+								true,
+								word_to_be_removed_from_response,
+								$author$project$Main$UpdateAnsAs(
+									{
+										candidates: A2($author$project$Main$resurrect_word, word_to_be_removed_from_response, model.ans.candidates),
+										response: remaining
+									}));
+						},
+						$author$project$Main$all_possible_removal_of_one_elem(model.ans.response)))),
 				A2(
 				$elm$html$Html$div,
 				_List_fromArray(
@@ -5516,8 +5618,26 @@ var $author$project$Main$view = function (model) {
 				A2(
 					$elm$core$List$intersperse,
 					$elm$html$Html$text(' '),
-					A2($elm$core$List$map, $author$project$Main$candidate_button, model.ans.candidates))),
-				$author$project$Main$submission_or_feedback(model.state)
+					A2(
+						$elm$core$List$map,
+						function (_v1) {
+							var q = _v1.a;
+							var new_candidates = _v1.b;
+							return A3(
+								$author$project$Main$btn,
+								!q.used_up,
+								q.w,
+								$author$project$Main$UpdateAnsAs(
+									{
+										candidates: new_candidates,
+										response: _Utils_ap(
+											model.ans.response,
+											_List_fromArray(
+												[q.w]))
+									}));
+						},
+						$author$project$Main$all_possible_turnoff_of_one_elem(model.ans.candidates)))),
+				$author$project$Main$html_for_submission_or_feedback(model.state)
 			]));
 };
 var $author$project$Main$main = $elm$browser$Browser$sandbox(
