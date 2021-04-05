@@ -28,6 +28,35 @@ button.submit {
     min-width: 150px;
 }
 
+button.on_the_right {
+    position: absolute;
+    left: 430px;
+    top: 10px;
+}
+
+.correct_feedback {
+    background-color: rgb(215, 255, 184);
+}
+
+.incorrect_feedback {
+    background-color: rgb(255, 223, 224);
+}
+
+.feedback_text {
+    position: absolute;
+    left: 160px;
+    top: 15px;
+    font-size: 23px;
+}
+
+.correct_feedback_text {
+    color: rgb(88, 167, 0);
+}
+
+.incorrect_feedback_text {
+    color: rgb(236, 11, 27);
+}
+
 button.submit:hover {
     border-width: 0 0 4px;
     background-color: rgb(96, 223, 2);
@@ -107,4 +136,9 @@ button.not_displayed {
 
 .candidates {
     padding: 50px 0 0 0;
+}
+
+.submission_or_feedback {
+    position: relative;
+    height: 100px;
 }
