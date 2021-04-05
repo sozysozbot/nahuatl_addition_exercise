@@ -10,8 +10,9 @@ import Browser
 import Html exposing (Html, b, button, div, span, text)
 import Html.Attributes exposing (class, style)
 import Html.Events exposing (onClick)
-import Svg exposing (Svg, circle, g, polygon, rect, svg)
-import Svg.Attributes exposing (cx, cy, fill, height, points, r, rx, ry, title, viewBox, width, x, y)
+import List exposing (intersperse)
+import Svg exposing (circle, g, polygon, svg)
+import Svg.Attributes exposing (cx, cy, fill, points, r, title, viewBox)
 
 
 
@@ -22,8 +23,12 @@ type alias Word =
     String
 
 
-type UserProvidingTheAnswer
-    = ComposingSubmission { submission : List Word, candidates : List { w : Word, used_up : Bool } }
+type alias UserAnswer =
+    { submission : List Word, candidates : List { w : Word, used_up : Bool } }
+
+
+type State
+    = ComposingSubmission
     | YouAreRight
     | YouAreWrong
 
@@ -33,24 +38,25 @@ type alias Prompt =
 
 
 type alias Model =
-    { ans : UserProvidingTheAnswer, prompt : Prompt }
+    { state : State, ans : UserAnswer, prompt : Prompt }
 
 
 init : Model
 init =
     { prompt = { prompt = [ "chicueyi", "huan", "chicueyi" ] }
-    , ans =
+    , state =
         ComposingSubmission
-            { submission = [ "caxtolli", "huan", "ce" ]
-            , candidates =
-                [ { w = "huan", used_up = True }
-                , { w = "caxtolli", used_up = True }
-                , { w = "tlahco", used_up = False }
-                , { w = "ce", used_up = True }
-                , { w = "chiucnahui", used_up = False }
-                , { w = "ome", used_up = False }
-                ]
-            }
+    , ans =
+        { submission = [ "caxtolli", "huan", "ce" ]
+        , candidates =
+            [ { w = "huan", used_up = True }
+            , { w = "caxtolli", used_up = True }
+            , { w = "tlahco", used_up = False }
+            , { w = "ce", used_up = True }
+            , { w = "chiucnahui", used_up = False }
+            , { w = "ome", used_up = False }
+            ]
+        }
     }
 
 
@@ -64,25 +70,26 @@ type Msg
 
 update : Msg -> Model -> Model
 update msg model =
-    case ( msg, model.ans ) of
+    case ( msg, model.state ) of
         ( Proceed, YouAreRight ) ->
             init
 
         ( Proceed, YouAreWrong ) ->
             init
 
-        ( Proceed, ComposingSubmission submission ) ->
-            if .submission submission == [ "caxtolli", "huan", "ce" ] then
-                { model | ans = YouAreRight }
+        ( Proceed, ComposingSubmission ) ->
+            if model.ans.submission == [ "caxtolli", "huan", "ce" ] then
+                { model | state = YouAreRight }
 
             else
-                { model | ans = YouAreWrong }
+                { model | state = YouAreWrong }
 
 
 
 -- VIEW
 
 
+icon : Html msg
 icon =
     svg [ style "width" "64px", style "height" "64px", style "vertical-align" "middle", viewBox "0 0 24 24" ]
         [ g [ title "Recording not yet available!" ]
@@ -102,41 +109,52 @@ view model =
         , style "min-width" "600px"
         ]
         [ div [ class "problem", style "font-size" "19px", style "font-weight" "sans-serif" ]
-            [ icon
-            , span [ title "Recording not yet available!" ] [ text "🔊" ]
-            , span [ class "annotated" ] [ text "chicueyi" ]
-            , text " "
-            , span [ class "annotated" ] [ text "huan" ]
-            , text " "
-            , span [ class "annotated" ] [ text "chicueyi" ]
-            ]
+            ([ icon
+             , span [ title "Recording not yet available!" ] [ text "🔊" ]
+             ]
+                ++ (model.prompt.prompt
+                        |> List.map (\w -> span [ class "annotated" ] [ text w ])
+                        |> intersperse (text " ")
+                   )
+            )
         , div [ class "response" ]
-            [ button [ class "word", class "displayed" ] [ text "caxtolli" ]
-            , text " "
-            , button [ class "word", class "displayed" ] [ text "huan" ]
-            , text " "
-            , button [ class "word", class "displayed" ] [ text "ce" ]
-            ]
+            (model.ans.submission
+                |> List.map (btn True)
+                |> intersperse (text " ")
+            )
         , div [ class "candidates", style "padding-bottom" "40px" ]
-            [ button [ class "word", class "not_displayed" ] [ text "huan" ]
-            , text " "
-            , button [ class "word", class "not_displayed" ] [ text "caxtolli" ]
-            , text " "
-            , button [ class "word", class "displayed" ] [ text "tlahco" ]
-            , text " "
-            , button [ class "word", class "not_displayed" ] [ text "ce" ]
-            , text " "
-            , button [ class "word", class "displayed" ] [ text "chiucnahui" ]
-            , text " "
-            , button [ class "word", class "displayed" ] [ text "ome" ]
-            ]
-        , submission_or_feedback model.ans
+            (model.ans.candidates
+                |> List.map candidate_button
+                |> intersperse (text " ")
+            )
+        , submission_or_feedback model.state
         ]
 
 
+btn : Bool -> String -> Html msg
+btn disp txt =
+    button
+        [ class "word"
+        , class
+            (if disp then
+                "displayed"
+
+             else
+                "not_displayed"
+            )
+        ]
+        [ text txt ]
+
+
+candidate_button : { a | used_up : Bool, w : String } -> Html msg
+candidate_button q =
+    btn (not q.used_up) q.w
+
+
+submission_or_feedback : State -> Html Msg
 submission_or_feedback ans =
     case ans of
-        ComposingSubmission _ ->
+        ComposingSubmission ->
             div [ onClick Proceed, class "submission_or_feedback" ] [ button [ class "submit", class "on_the_right" ] [ text "NIQUIHTOA" ] ]
 
         YouAreRight ->

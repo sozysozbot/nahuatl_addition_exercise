@@ -4435,30 +4435,28 @@ var $elm$core$Set$toList = function (_v0) {
 var $elm$core$Basics$EQ = {$: 'EQ'};
 var $elm$core$Basics$GT = {$: 'GT'};
 var $elm$core$Basics$LT = {$: 'LT'};
-var $author$project$Main$ComposingSubmission = function (a) {
-	return {$: 'ComposingSubmission', a: a};
-};
+var $author$project$Main$ComposingSubmission = {$: 'ComposingSubmission'};
 var $elm$core$Basics$False = {$: 'False'};
 var $elm$core$Basics$True = {$: 'True'};
 var $author$project$Main$init = {
-	ans: $author$project$Main$ComposingSubmission(
-		{
-			candidates: _List_fromArray(
-				[
-					{used_up: true, w: 'huan'},
-					{used_up: true, w: 'caxtolli'},
-					{used_up: false, w: 'tlahco'},
-					{used_up: true, w: 'ce'},
-					{used_up: false, w: 'chiucnahui'},
-					{used_up: false, w: 'ome'}
-				]),
-			submission: _List_fromArray(
-				['caxtolli', 'huan', 'ce'])
-		}),
+	ans: {
+		candidates: _List_fromArray(
+			[
+				{used_up: true, w: 'huan'},
+				{used_up: true, w: 'caxtolli'},
+				{used_up: false, w: 'tlahco'},
+				{used_up: true, w: 'ce'},
+				{used_up: false, w: 'chiucnahui'},
+				{used_up: false, w: 'ome'}
+			]),
+		submission: _List_fromArray(
+			['caxtolli', 'huan', 'ce'])
+	},
 	prompt: {
 		prompt: _List_fromArray(
 			['chicueyi', 'huan', 'chicueyi'])
-	}
+	},
+	state: $author$project$Main$ComposingSubmission
 };
 var $elm$core$Result$Err = function (a) {
 	return {$: 'Err', a: a};
@@ -5192,7 +5190,7 @@ var $author$project$Main$YouAreRight = {$: 'YouAreRight'};
 var $author$project$Main$YouAreWrong = {$: 'YouAreWrong'};
 var $author$project$Main$update = F2(
 	function (msg, model) {
-		var _v0 = _Utils_Tuple2(msg, model.ans);
+		var _v0 = _Utils_Tuple2(msg, model.state);
 		switch (_v0.b.$) {
 			case 'YouAreRight':
 				var _v1 = _v0.a;
@@ -5204,17 +5202,15 @@ var $author$project$Main$update = F2(
 				return $author$project$Main$init;
 			default:
 				var _v5 = _v0.a;
-				var submission = _v0.b.a;
+				var _v6 = _v0.b;
 				return _Utils_eq(
-					function ($) {
-						return $.submission;
-					}(submission),
+					model.ans.submission,
 					_List_fromArray(
 						['caxtolli', 'huan', 'ce'])) ? _Utils_update(
 					model,
-					{ans: $author$project$Main$YouAreRight}) : _Utils_update(
+					{state: $author$project$Main$YouAreRight}) : _Utils_update(
 					model,
-					{ans: $author$project$Main$YouAreWrong});
+					{state: $author$project$Main$YouAreWrong});
 		}
 	});
 var $elm$html$Html$button = _VirtualDom_node('button');
@@ -5227,6 +5223,27 @@ var $elm$html$Html$Attributes$stringProperty = F2(
 			$elm$json$Json$Encode$string(string));
 	});
 var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty('className');
+var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
+var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
+var $author$project$Main$btn = F2(
+	function (disp, txt) {
+		return A2(
+			$elm$html$Html$button,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('word'),
+					$elm$html$Html$Attributes$class(
+					disp ? 'displayed' : 'not_displayed')
+				]),
+			_List_fromArray(
+				[
+					$elm$html$Html$text(txt)
+				]));
+	});
+var $elm$core$Basics$not = _Basics_not;
+var $author$project$Main$candidate_button = function (q) {
+	return A2($author$project$Main$btn, !q.used_up, q.w);
+};
 var $elm$html$Html$div = _VirtualDom_node('div');
 var $elm$svg$Svg$trustedNode = _VirtualDom_nodeNS('http://www.w3.org/2000/svg');
 var $elm$svg$Svg$circle = $elm$svg$Svg$trustedNode('circle');
@@ -5291,6 +5308,24 @@ var $author$project$Main$icon = A2(
 					_List_Nil)
 				]))
 		]));
+var $elm$core$List$intersperse = F2(
+	function (sep, xs) {
+		if (!xs.b) {
+			return _List_Nil;
+		} else {
+			var hd = xs.a;
+			var tl = xs.b;
+			var step = F2(
+				function (x, rest) {
+					return A2(
+						$elm$core$List$cons,
+						sep,
+						A2($elm$core$List$cons, x, rest));
+				});
+			var spersed = A3($elm$core$List$foldr, step, _List_Nil, tl);
+			return A2($elm$core$List$cons, hd, spersed);
+		}
+	});
 var $elm$html$Html$span = _VirtualDom_node('span');
 var $author$project$Main$Proceed = {$: 'Proceed'};
 var $elm$html$Html$b = _VirtualDom_node('b');
@@ -5311,8 +5346,6 @@ var $elm$html$Html$Events$onClick = function (msg) {
 		'click',
 		$elm$json$Json$Decode$succeed(msg));
 };
-var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
-var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
 var $author$project$Main$submission_or_feedback = function (ans) {
 	switch (ans.$) {
 		case 'ComposingSubmission':
@@ -5427,96 +5460,52 @@ var $author$project$Main$view = function (model) {
 						A2($elm$html$Html$Attributes$style, 'font-size', '19px'),
 						A2($elm$html$Html$Attributes$style, 'font-weight', 'sans-serif')
 					]),
-				_List_fromArray(
-					[
-						$author$project$Main$icon,
-						A2(
-						$elm$html$Html$span,
-						_List_fromArray(
-							[
-								$elm$svg$Svg$Attributes$title('Recording not yet available!')
-							]),
-						_List_fromArray(
-							[
-								$elm$html$Html$text('🔊')
-							])),
-						A2(
-						$elm$html$Html$span,
-						_List_fromArray(
-							[
-								$elm$html$Html$Attributes$class('annotated')
-							]),
-						_List_fromArray(
-							[
-								$elm$html$Html$text('chicueyi')
-							])),
+				_Utils_ap(
+					_List_fromArray(
+						[
+							$author$project$Main$icon,
+							A2(
+							$elm$html$Html$span,
+							_List_fromArray(
+								[
+									$elm$svg$Svg$Attributes$title('Recording not yet available!')
+								]),
+							_List_fromArray(
+								[
+									$elm$html$Html$text('🔊')
+								]))
+						]),
+					A2(
+						$elm$core$List$intersperse,
 						$elm$html$Html$text(' '),
 						A2(
-						$elm$html$Html$span,
-						_List_fromArray(
-							[
-								$elm$html$Html$Attributes$class('annotated')
-							]),
-						_List_fromArray(
-							[
-								$elm$html$Html$text('huan')
-							])),
-						$elm$html$Html$text(' '),
-						A2(
-						$elm$html$Html$span,
-						_List_fromArray(
-							[
-								$elm$html$Html$Attributes$class('annotated')
-							]),
-						_List_fromArray(
-							[
-								$elm$html$Html$text('chicueyi')
-							]))
-					])),
+							$elm$core$List$map,
+							function (w) {
+								return A2(
+									$elm$html$Html$span,
+									_List_fromArray(
+										[
+											$elm$html$Html$Attributes$class('annotated')
+										]),
+									_List_fromArray(
+										[
+											$elm$html$Html$text(w)
+										]));
+							},
+							model.prompt.prompt)))),
 				A2(
 				$elm$html$Html$div,
 				_List_fromArray(
 					[
 						$elm$html$Html$Attributes$class('response')
 					]),
-				_List_fromArray(
-					[
-						A2(
-						$elm$html$Html$button,
-						_List_fromArray(
-							[
-								$elm$html$Html$Attributes$class('word'),
-								$elm$html$Html$Attributes$class('displayed')
-							]),
-						_List_fromArray(
-							[
-								$elm$html$Html$text('caxtolli')
-							])),
-						$elm$html$Html$text(' '),
-						A2(
-						$elm$html$Html$button,
-						_List_fromArray(
-							[
-								$elm$html$Html$Attributes$class('word'),
-								$elm$html$Html$Attributes$class('displayed')
-							]),
-						_List_fromArray(
-							[
-								$elm$html$Html$text('huan')
-							])),
-						$elm$html$Html$text(' '),
-						A2(
-						$elm$html$Html$button,
-						_List_fromArray(
-							[
-								$elm$html$Html$Attributes$class('word'),
-								$elm$html$Html$Attributes$class('displayed')
-							]),
-						_List_fromArray(
-							[
-								$elm$html$Html$text('ce')
-							]))
-					])),
+				A2(
+					$elm$core$List$intersperse,
+					$elm$html$Html$text(' '),
+					A2(
+						$elm$core$List$map,
+						$author$project$Main$btn(true),
+						model.ans.submission))),
 				A2(
 				$elm$html$Html$div,
 				_List_fromArray(
@@ -5524,81 +5513,11 @@ var $author$project$Main$view = function (model) {
 						$elm$html$Html$Attributes$class('candidates'),
 						A2($elm$html$Html$Attributes$style, 'padding-bottom', '40px')
 					]),
-				_List_fromArray(
-					[
-						A2(
-						$elm$html$Html$button,
-						_List_fromArray(
-							[
-								$elm$html$Html$Attributes$class('word'),
-								$elm$html$Html$Attributes$class('not_displayed')
-							]),
-						_List_fromArray(
-							[
-								$elm$html$Html$text('huan')
-							])),
-						$elm$html$Html$text(' '),
-						A2(
-						$elm$html$Html$button,
-						_List_fromArray(
-							[
-								$elm$html$Html$Attributes$class('word'),
-								$elm$html$Html$Attributes$class('not_displayed')
-							]),
-						_List_fromArray(
-							[
-								$elm$html$Html$text('caxtolli')
-							])),
-						$elm$html$Html$text(' '),
-						A2(
-						$elm$html$Html$button,
-						_List_fromArray(
-							[
-								$elm$html$Html$Attributes$class('word'),
-								$elm$html$Html$Attributes$class('displayed')
-							]),
-						_List_fromArray(
-							[
-								$elm$html$Html$text('tlahco')
-							])),
-						$elm$html$Html$text(' '),
-						A2(
-						$elm$html$Html$button,
-						_List_fromArray(
-							[
-								$elm$html$Html$Attributes$class('word'),
-								$elm$html$Html$Attributes$class('not_displayed')
-							]),
-						_List_fromArray(
-							[
-								$elm$html$Html$text('ce')
-							])),
-						$elm$html$Html$text(' '),
-						A2(
-						$elm$html$Html$button,
-						_List_fromArray(
-							[
-								$elm$html$Html$Attributes$class('word'),
-								$elm$html$Html$Attributes$class('displayed')
-							]),
-						_List_fromArray(
-							[
-								$elm$html$Html$text('chiucnahui')
-							])),
-						$elm$html$Html$text(' '),
-						A2(
-						$elm$html$Html$button,
-						_List_fromArray(
-							[
-								$elm$html$Html$Attributes$class('word'),
-								$elm$html$Html$Attributes$class('displayed')
-							]),
-						_List_fromArray(
-							[
-								$elm$html$Html$text('ome')
-							]))
-					])),
-				$author$project$Main$submission_or_feedback(model.ans)
+				A2(
+					$elm$core$List$intersperse,
+					$elm$html$Html$text(' '),
+					A2($elm$core$List$map, $author$project$Main$candidate_button, model.ans.candidates))),
+				$author$project$Main$submission_or_feedback(model.state)
 			]));
 };
 var $author$project$Main$main = $elm$browser$Browser$sandbox(
